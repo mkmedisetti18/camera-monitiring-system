@@ -1,0 +1,20 @@
+# Python virtual environment
+venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# FFmpeg binaries and archives
+ffmpeg.zip
+ffmpeg-8.0.1-essentials_build/
+ffmpeg/
+
+# Recorded video files
+recordings/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

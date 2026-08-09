@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="cameraMonitorApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Monitoring System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --light-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+            --transition: all 0.2s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --light-bg: #2d2d2d;
+            --border-color: #404040;
+            --shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+        }
+
+        .header-section {
+            background-color: var(--light-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title {
+            color: var(--accent-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            color: var(--secondary-color);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .api-links {
+            background-color: var(--bg-color);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .api-links a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .api-links a:hover {
+            color: var(--text-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            color: var(--accent-color);
+        }
+
+        .modern-card {
+            background-color: var(--bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .modern-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 1.5rem 2rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .card-header h5 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .form-select, .form-control {
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            transition: var(--transition);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(28, 34, 162, 0.25);
+        }
+
+        .btn {
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #03136e;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+            background-color: transparent;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-outline-danger {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            background-color: transparent;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .stream-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        .stream-card {
+            background-color: var(--light-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .stream-card img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .stream-info {
+            padding: 1rem;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+        }
+
+        .recording-timer {
+            background-color: var(--danger-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .ptz-controls {
+            background-color: var(--light-bg);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .ptz-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .ptz-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1.5rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .ptz-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-connected { background-color: var(--success-color); }
+        .status-disconnected { background-color: var(--danger-color); }
+        .status-error { background-color: var(--warning-color); }
+        .status-available { background-color: #17a2b8; }
+        .status-unknown { background-color: var(--secondary-color); }
+
+        .recording-item {
+            background-color: var(--light-bg);
+            border-radius: var(--border-radius);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .recording-item:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .recording-item.dragging {
+            opacity: 0.5;
+        }
+
+        .replay-container.drag-over {
+            border: 2px dashed var(--accent-color);
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+
+        .replay-container {
+            background-color: var(--light-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .replay-container img {
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-title {
+                font-size: 2rem;
+            }
+
+            .stream-container {
+                grid-template-columns: 1fr;
+            }
+
+            .ptz-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="header-section">
+            <h1 class="header-title">
+                <i class="fas fa-video me-3"></i>
+                Camera Monitoring System
+            </h1>
+            <p class="header-subtitle mb-3">
+                <i class="fas fa-shield-alt me-2"></i>
+                Advanced surveillance and monitoring platform powered by FastAPI
+            </p>
+            <div class="api-links">
+                <i class="fas fa-code"></i>
+                <a href="/docs" target="_blank">
+                    <i class="fas fa-external-link-alt me-1"></i>API Docs
+                </a>
+                <span class="text-muted">|</span>
+                <a href="/redoc" target="_blank">
+                    <i class="fas fa-external-link-alt me-1"></i>ReDoc
+                </a>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <!-- Camera Selection -->
+        <div class="modern-card">
+            <div class="card-header">
+                <h5>
+                    <i class="fas fa-camera me-2"></i>
+                    Camera Selection
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="cameraType" class="form-label fw-bold">
+                            <i class="fas fa-filter me-1"></i>Camera Type
+                        </label>
+                        <select class="form-select" id="cameraType">
+                            <option value="all">🌐 All Cameras</option>
+                            <option value="usb">📹 USB Cameras</option>
+                            <option value="ip">🌐 IP Cameras</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="cameraSelect" class="form-label fw-bold">
+                            <i class="fas fa-video me-1"></i>Select Camera
+                        </label>
+                        <select class="form-select" id="cameraSelect">
+                            <option value="">🎯 Choose a camera...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="selectCamera()">
+                            <i class="fas fa-plus me-2"></i>Select Camera
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Cameras -->
+        <div class="modern-card">
+            <div class="card-header">
+                <h5>
+                    <i class="fas fa-play-circle me-2"></i>
+                    Active Cameras
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="activeCamerasList"></div>
+            </div>
+        </div>
+
+        <!-- Stream and Controls -->
+        <div class="modern-card">
+            <div class="card-header">
+                <h5>
+                    <i class="fas fa-broadcast-tower me-2"></i>
+                    Live Stream & Controls
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="streamsContainer" class="stream-container"></div>
+
+                <div class="d-flex flex-wrap gap-3 align-items-center mt-4">
+                    <button class="btn btn-success" id="startRecord" onclick="startRecord()" disabled>
+                        <i class="fas fa-record-vinyl me-2"></i>Start Recording
+                    </button>
+                    <button class="btn btn-danger" id="stopRecord" onclick="stopRecord()" disabled>
+                        <i class="fas fa-stop me-2"></i>Stop Recording
+                    </button>
+                    <div id="recordingTime" style="display: none;" class="recording-timer">
+                        <i class="fas fa-clock me-1"></i>
+                        Recording: <span id="recordingTimeDisplay">00:00:00</span>
+                    </div>
+                </div>
+
+                <!-- PTZ Controls -->
+                <div class="ptz-controls">
+                    <h6 class="text-center mb-4">
+                        <i class="fas fa-crosshairs me-2"></i>PTZ Controls
+                    </h6>
+                    <div class="ptz-grid">
+                        <button class="ptz-btn btn-outline-secondary" onclick="ptzControl('pan', 'left')" title="Pan Left">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <button class="ptz-btn btn-outline-secondary" onclick="ptzControl('tilt', 'up')" title="Tilt Up">
+                            <i class="fas fa-arrow-up"></i>
+                        </button>
+                        <button class="ptz-btn btn-outline-secondary" onclick="ptzControl('pan', 'right')" title="Pan Right">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button class="ptz-btn btn-outline-secondary" onclick="ptzControl('tilt', 'down')" title="Tilt Down">
+                            <i class="fas fa-arrow-down"></i>
+                        </button>
+                        <button class="ptz-btn btn-outline-secondary" onclick="ptzControl('zoom', 'in')" title="Zoom In">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button class="ptz-btn btn-outline-secondary" onclick="ptzControl('zoom', 'out')" title="Zoom Out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-danger" onclick="ptzStop()">
+                            <i class="fas fa-stop-circle me-2"></i>Stop PTZ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recordings -->
+        <div class="modern-card">
+            <div class="card-header" onclick="toggleRecordings()" style="cursor: pointer;">
+                <h5>
+                    <i class="fas fa-folder-open me-2" id="recordingsIcon"></i>
+                    Recordings
+                    <i class="fas fa-chevron-down ms-2" id="recordingsChevron"></i>
+                </h5>
+            </div>
+            <div class="card-body" id="recordingsBody" style="display: none;">
+                <div id="recordingsList"></div>
+            </div>
+        </div>
+
+        <!-- Replay -->
+        <div class="modern-card">
+            <div class="card-header">
+                <h5>
+                    <i class="fas fa-play me-2"></i>
+                    Replay
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="replayContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activeCameras = [];
+        let currentCamera = null;
+        let cameras = [];
+        let recordingTimer = null;
+        let recordingStartTime = null;
+        let currentReplayFile = null;
+
+        async function loadCameras() {
+            const response = await fetch('/cameras');
+            cameras = await response.json();
+            updateCameraSelect();
+            updateActiveCamerasList();
+        }
+
+        function updateCameraSelect() {
+            const type = document.getElementById('cameraType').value;
+            const select = document.getElementById('cameraSelect');
+            select.innerHTML = '<option value="">Choose a camera...</option>';
+            cameras.forEach(cam => {
+                if (type === 'all' || cam.type === type) {
+                    const option = document.createElement('option');
+                    option.value = cam.id;
+                    let statusText = cam.health;
+                    if (cam.error_message) {
+                        statusText += ` (${cam.error_message})`;
+                    }
+                    option.textContent = `${cam.id} (${cam.type}) - ${statusText}`;
+                    // Color-code based on health
+                    if (cam.health === 'connected') {
+                        option.style.color = 'green';
+                    } else if (cam.health === 'disconnected' || cam.health === 'error') {
+                        option.style.color = 'red';
+                    } else {
+                        option.style.color = 'orange';
+                    }
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        async function selectCamera() {
+            const camId = document.getElementById('cameraSelect').value;
+            if (!camId || activeCameras.includes(camId)) return;
+
+            const response = await fetch(`/select/${camId}`, { method: 'POST' });
+            if (response.ok) {
+                const result = await response.json();
+                activeCameras.push(camId);
+                updateActiveCamerasList();
+                if (result.ready) {
+                    alert('Camera started successfully');
+                } else {
+                    alert('Camera starting... Please wait for it to be ready.');
+                    // Poll for readiness
+                    pollCameraReady(camId);
+                }
+            } else {
+                alert('Failed to start camera');
+            }
+        }
+
+        async function pollCameraReady(camId) {
+            const maxAttempts = 30; // 30 seconds max
+            let attempts = 0;
+            while (attempts < maxAttempts) {
+                try {
+                    const response = await fetch(`/camera_status/${camId}`);
+                    if (response.ok) {
+                        const status = await response.json();
+                        if (status.ready) {
+                            alert('Camera is now ready!');
+                            updateActiveCamerasList(); // Refresh to show ready status
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.log('Error polling camera status:', error);
+                }
+                attempts++;
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+            }
+            alert('Camera failed to become ready within timeout period.');
+        }
+
+        function updateActiveCamerasList() {
+            const container = document.getElementById('activeCamerasList');
+            container.innerHTML = '';
+            activeCameras.forEach(camId => {
+                const cam = cameras.find(c => c.id === camId);
+                const health = cam ? cam.health : 'unknown';
+                const errorMsg = cam && cam.error_message ? cam.error_message : '';
+                const div = document.createElement('div');
+                div.className = 'recording-item d-flex justify-content-between align-items-center';
+                let statusClass = 'status-unknown';
+                let statusIcon = 'fas fa-question-circle';
+                if (health === 'connected') {
+                    statusClass = 'status-connected';
+                    statusIcon = 'fas fa-check-circle';
+                } else if (health === 'disconnected' || health === 'error') {
+                    statusClass = 'status-disconnected';
+                    statusIcon = 'fas fa-times-circle';
+                } else {
+                    statusClass = 'status-available';
+                    statusIcon = 'fas fa-clock';
+                }
+                let buttons = `
+                    <button class="btn btn-sm btn-success me-2" onclick="viewCamera('${camId}')">
+                        <i class="fas fa-eye me-1"></i>View Stream
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="stopCamera('${camId}')">
+                        <i class="fas fa-stop me-1"></i>Stop Stream
+                    </button>
+                `;
+                if (health === 'disconnected' || health === 'error') {
+                    buttons += `<button class="btn btn-sm btn-warning ms-2" onclick="reconnectCamera('${camId}')">
+                        <i class="fas fa-redo me-1"></i>Reconnect
+                    </button>`;
+                }
+                div.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <span class="status-indicator ${statusClass}"></span>
+                        <i class="${statusIcon} me-2" style="color: ${statusClass === 'status-connected' ? '#28a745' : statusClass === 'status-disconnected' ? '#dc3545' : '#ffc107'}"></i>
+                        <div>
+                            <strong>${camId}</strong>
+                            <br>
+                            <small class="text-muted">${health}${errorMsg ? ' - ' + errorMsg : ''}</small>
+                        </div>
+                    </div>
+                    <div>${buttons}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function reconnectCamera(camId) {
+            const response = await fetch(`/reconnect/${camId}`, { method: 'POST' });
+            if (response.ok) {
+                alert('Reconnection attempt successful');
+                loadCameras(); // Refresh to update statuses
+            } else {
+                const error = await response.json();
+                alert(`Reconnection failed: ${error.error}`);
+            }
+        }
+
+        function viewCamera(camId) {
+            // Check if camera is already being viewed
+            if (currentCamera === camId) {
+                alert('This camera is already being viewed. Please stop the current stream first.');
+                return;
+            }
+
+            // Check if camera is active
+            if (!activeCameras.includes(camId)) {
+                alert('Camera is not active. Please select the camera first.');
+                return;
+            }
+
+            currentCamera = camId;
+            addStreamToUI(camId);
+            document.getElementById('startRecord').disabled = false;
+            document.getElementById('stopRecord').disabled = true;
+            // Start WebRTC streaming
+            startWebRTC();
+        }
+
+        async function stopCamera(camId) {
+            await fetch(`/stop_stream/${camId}`, { method: 'POST' });
+            activeCameras = activeCameras.filter(id => id !== camId);
+            updateActiveCamerasList();
+            removeStreamFromUI(camId);
+            if (currentCamera === camId) {
+                // Stop WebRTC streaming
+                stopWebRTC();
+                currentCamera = null;
+                document.getElementById('startRecord').disabled = true;
+                document.getElementById('stopRecord').disabled = true;
+            }
+        }
+
+        async function startRecord() {
+            if (!currentCamera) return;
+            const response = await fetch(`/start_record/${currentCamera}`, { method: 'POST' });
+            if (response.ok) {
+                document.getElementById('startRecord').disabled = true;
+                document.getElementById('stopRecord').disabled = false;
+                recordingStartTime = Date.now();
+                recordingTimer = setInterval(updateRecordingTime, 1000);
+                document.getElementById('recordingTime').style.display = 'block';
+                alert('Recording started');
+            } else {
+                alert('Failed to start recording');
+            }
+        }
+
+        async function stopRecord() {
+            if (!currentCamera) return;
+            const response = await fetch(`/stop_record/${currentCamera}`, { method: 'POST' });
+            if (response.ok) {
+                document.getElementById('startRecord').disabled = false;
+                document.getElementById('stopRecord').disabled = true;
+                clearInterval(recordingTimer);
+                recordingTimer = null;
+                recordingStartTime = null;
+                document.getElementById('recordingTime').style.display = 'none';
+                alert('Recording stopped');
+                loadRecordings();
+            } else {
+                alert('Failed to stop recording');
+            }
+        }
+
+
+
+        async function loadRecordings() {
+            const response = await fetch('/recordings');
+            const files = await response.json();
+            const container = document.getElementById('recordingsList');
+            const recordingsCard = container.closest('.modern-card');
+
+            if (files.length === 0) {
+                // Hide the recordings section if no files
+                if (recordingsCard) {
+                    recordingsCard.style.display = 'none';
+                }
+                return;
+            }
+
+            // Show the recordings section if there are files
+            if (recordingsCard) {
+                recordingsCard.style.display = 'block';
+            }
+
+            container.innerHTML = '';
+            files.forEach(file => {
+                const div = document.createElement('div');
+                div.className = 'recording-item d-flex justify-content-between align-items-center';
+                div.draggable = true;
+                div.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', file.filename);
+                    div.classList.add('dragging');
+                });
+                div.addEventListener('dragend', () => {
+                    div.classList.remove('dragging');
+                });
+                const modifiedDate = new Date(file.modified).toLocaleString();
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                div.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-file-video text-primary me-3" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <strong class="text-dark">${file.filename}</strong>
+                            <br>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>${modifiedDate} |
+                                <i class="fas fa-weight me-1"></i>${sizeMB} MB
+                            </small>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-primary" onclick="replay('${file.filename}')">
+                        <i class="fas fa-play me-2"></i>Replay
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+
+            // Add drag and drop functionality to replay container
+            const replayContainer = document.getElementById('replayContainer');
+            replayContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                replayContainer.classList.add('drag-over');
+            });
+            replayContainer.addEventListener('dragleave', () => {
+                replayContainer.classList.remove('drag-over');
+            });
+            replayContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                replayContainer.classList.remove('drag-over');
+                const filename = e.dataTransfer.getData('text/plain');
+                if (filename) {
+                    replay(filename);
+                }
+            });
+        }
+
+        function updateRecordingTime() {
+            if (recordingStartTime) {
+                const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+                const hours = Math.floor(elapsed / 3600).toString().padStart(2, '0');
+                const minutes = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                document.getElementById('recordingTimeDisplay').textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }
+
+        function addStreamToUI(camId) {
+            const container = document.getElementById('streamsContainer');
+            // Remove existing stream if present to ensure fresh start
+            removeStreamFromUI(camId);
+
+            const streamDiv = document.createElement('div');
+            streamDiv.className = 'stream-card';
+            streamDiv.id = `stream-${camId}`;
+            const timestamp = Date.now();
+            streamDiv.innerHTML = `
+                <img src="/stream/${camId}?t=${timestamp}" alt="Stream ${camId}" class="stream-image">
+                <div class="stream-info">
+                    <h6 class="mb-0">
+                        <i class="fas fa-video me-2"></i>Live Stream: ${camId}
+                    </h6>
+                    <small class="text-muted">
+                        <i class="fas fa-circle text-success me-1"></i>Streaming
+                    </small>
+                </div>
+            `;
+            container.appendChild(streamDiv);
+        }
+
+        function removeStreamFromUI(camId) {
+            const streamDiv = document.getElementById(`stream-${camId}`);
+            if (streamDiv) {
+                streamDiv.remove();
+            }
+        }
+
+        async function replay(filename) {
+            const container = document.getElementById('replayContainer');
+            // Clear any existing replay
+            container.innerHTML = `
+                <div class="replay-container">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0 text-white">
+                            <i class="fas fa-play-circle me-2"></i>Replay: ${filename}
+                        </h6>
+                        <button class="btn btn-danger btn-sm" onclick="stopReplay('${filename}')">
+                            <i class="fas fa-stop me-2"></i>Stop Replay
+                        </button>
+                    </div>
+                    <img src="/replay_stream/${filename}" alt="Replay Stream" class="replay-image">
+                </div>
+            `;
+            currentReplayFile = filename;
+        }
+
+        async function stopReplay(filename) {
+            await fetch(`/stop_replay/${filename}`, { method: 'POST' });
+            const container = document.getElementById('replayContainer');
+            container.innerHTML = '';
+            currentReplayFile = null;
+            alert('Replay stopped');
+        }
+
+        async function startWebRTC() {
+            if (!currentCamera) return;
+            document.getElementById('webrtcStatus').innerHTML = 'Initializing WebRTC...';
+            try {
+                const response = await fetch(`/webrtc_offer/${currentCamera}`, { method: 'POST' });
+                if (response.ok) {
+                    const offer = await response.json();
+                    // In a real implementation, you would handle the WebRTC offer here
+                    // For now, just show status
+                    document.getElementById('webrtcStatus').innerHTML = 'WebRTC offer created. Ready for client connection.';
+                    document.getElementById('startWebRTC').disabled = true;
+                    document.getElementById('stopWebRTC').disabled = false;
+                    alert('WebRTC streaming started');
+                } else {
+                    const error = await response.json();
+                    document.getElementById('webrtcStatus').innerHTML = `Error: ${error.error}`;
+                    alert('Failed to start WebRTC');
+                }
+            } catch (error) {
+                document.getElementById('webrtcStatus').innerHTML = `Error: ${error.message}`;
+                alert('Failed to start WebRTC');
+            }
+        }
+
+        async function stopWebRTC() {
+            if (!currentCamera) return;
+            // In a real implementation, you would send a stop command to the server
+            document.getElementById('webrtcStatus').innerHTML = 'WebRTC stopped';
+            document.getElementById('startWebRTC').disabled = false;
+            document.getElementById('stopWebRTC').disabled = true;
+            alert('WebRTC streaming stopped');
+        }
+
+        // PTZ control functions
+        async function ptzControl(action, direction) {
+            if (!currentCamera) return;
+            const response = await fetch(`/ptz/${currentCamera}/${action}/${direction}`, { method: 'POST' });
+            if (response.ok) {
+                console.log(`${action} ${direction} command sent`);
+            } else {
+                alert('PTZ command failed');
+            }
+        }
+
+        async function ptzStop() {
+            if (!currentCamera) return;
+            const response = await fetch(`/ptz/${currentCamera}/stop`, { method: 'POST' });
+            if (response.ok) {
+                console.log('PTZ stop command sent');
+            } else {
+                alert('PTZ stop command failed');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.querySelector('.theme-toggle i');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                themeIcon.className = 'fas fa-moon';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+            }
+        }
+
+        function toggleRecordings() {
+            const body = document.getElementById('recordingsBody');
+            const chevron = document.getElementById('recordingsChevron');
+            const icon = document.getElementById('recordingsIcon');
+
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                chevron.className = 'fas fa-chevron-up ms-2';
+                icon.className = 'fas fa-folder-open me-2';
+                // Load recordings when expanding
+                loadRecordings();
+            } else {
+                body.style.display = 'none';
+                chevron.className = 'fas fa-chevron-down ms-2';
+                icon.className = 'fas fa-folder me-2';
+            }
+        }
+
+        function setPreset(preset) {
+            // Placeholder for preset functionality
+            alert(`Preset ${preset} not implemented yet`);
+        }
+
+        document.getElementById('cameraType').addEventListener('change', updateCameraSelect);
+        window.onload = () => {
+            loadCameras();
+            // Don't load recordings initially - wait for user to click
+        };
+    </script>
+</body>
+</html>
