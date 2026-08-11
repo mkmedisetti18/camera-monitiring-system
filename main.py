@@ -1192,7 +1192,10 @@ async def replay_stream(filename: str):
     """
     Streams the replay video
     """
-    filepath = os.path.join(RECORD_DIR, filename)
+    base_dir = os.path.realpath(RECORD_DIR)
+    filepath = os.path.realpath(os.path.join(base_dir, filename))
+    if os.path.commonpath([base_dir, filepath]) != base_dir:
+        raise HTTPException(status_code=400, detail="Invalid filename")
     if not os.path.exists(filepath):
         raise HTTPException(status_code=404, detail="File not found")
 
