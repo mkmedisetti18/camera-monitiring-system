@@ -2,6 +2,7 @@ import cv2
 import time
 import threading
 import os
+import re
 import configparser
 from queue import Queue
 from datetime import datetime
@@ -914,6 +915,11 @@ class ReplayManager:
 
         # Only allow plain filenames (no directory components)
         if not filename or os.path.isabs(filename) or os.path.basename(filename) != filename:
+            return None
+
+        # Allowlist safe recording filename characters only.
+        # This blocks path metacharacters while preserving normal file names.
+        if not re.fullmatch(r"[A-Za-z0-9._-]+", filename):
             return None
 
         safe_filename = os.path.basename(filename)
