@@ -924,6 +924,15 @@ class ReplayManager:
 
         safe_filename = os.path.basename(filename)
         base_dir = os.path.realpath(RECORD_DIR)
+
+        # Explicit allowlist: only files currently present in RECORD_DIR are valid.
+        valid_filenames = {
+            entry for entry in os.listdir(base_dir)
+            if os.path.isfile(os.path.join(base_dir, entry))
+        }
+        if safe_filename not in valid_filenames:
+            return None
+
         filepath = os.path.realpath(os.path.join(base_dir, safe_filename))
 
         # Ensure the resolved path remains inside RECORD_DIR
