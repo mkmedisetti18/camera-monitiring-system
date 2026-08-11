@@ -912,8 +912,13 @@ class ReplayManager:
             self.active_replays[filename].stop()
             del self.active_replays[filename]
 
+        # Only allow plain filenames (no directory components)
+        if not filename or os.path.isabs(filename) or os.path.basename(filename) != filename:
+            return None
+
+        safe_filename = os.path.basename(filename)
         base_dir = os.path.realpath(RECORD_DIR)
-        filepath = os.path.realpath(os.path.join(base_dir, filename))
+        filepath = os.path.realpath(os.path.join(base_dir, safe_filename))
 
         # Ensure the resolved path remains inside RECORD_DIR
         if os.path.commonpath([base_dir, filepath]) != base_dir:
@@ -922,8 +927,8 @@ class ReplayManager:
         if not os.path.exists(filepath):
             return None
 
-        replay_worker = ReplayWorker(filename, filepath)
-        self.active_replays[filename] = replay_worker
+        replay_worker = ReplayWorker(safe_filename, filepath)
+        self.active_replays[safe_filename] = replay_worker
         return replay_worker
 
     def get_replay(self, filename):
