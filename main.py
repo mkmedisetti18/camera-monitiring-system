@@ -912,7 +912,13 @@ class ReplayManager:
             self.active_replays[filename].stop()
             del self.active_replays[filename]
 
-        filepath = os.path.join(RECORD_DIR, filename)
+        base_dir = os.path.realpath(RECORD_DIR)
+        filepath = os.path.realpath(os.path.join(base_dir, filename))
+
+        # Ensure the resolved path remains inside RECORD_DIR
+        if os.path.commonpath([base_dir, filepath]) != base_dir:
+            return None
+
         if not os.path.exists(filepath):
             return None
 
